@@ -7,7 +7,7 @@
 const hre = require("hardhat");
 
 async function main() {
-  const RPS = await hre.ethers.getContractFactory("rps");
+  const RPS = await hre.ethers.getContractFactory("RPS");
   const rps = await RPS.deploy();
 
   await rps.deployed();
