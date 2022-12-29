@@ -57,9 +57,9 @@ contract RPS {
     // Player commits their choice in the form #Pass where # is the corresponding to the choice number (Rock - 1, Paper - 2, Scissors - 3) and pass is a random password
     // Example if player choose paper and a password Bunny, they should commit the sha256 of 2Bunny.
     function commitChoice(bytes32 commitment) public playersHaveRegistered {
-        if (msg.sender == player1 && commitment == 0x00) {
+        if (msg.sender == player1 && commitment != 0x00) {
             player1_commitment = commitment;
-        } else if (msg.sender == player2 && commitment == 0x00) {
+        } else if (msg.sender == player2 && commitment != 0x00) {
             player2_commitment = commitment;
         }
 
@@ -136,6 +136,8 @@ contract RPS {
             // Player 2 wins
             player2.transfer(address(this).balance);
         }
+
+        resetGame();
     }
 
     function resetGame() private {

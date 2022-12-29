@@ -1,11 +1,13 @@
+const { ethers } = require("hardhat");
 const hre = require("hardhat");
 
 // scripts/index.js
 async function main () {
-    const contractAddress = "0xE7D0ad4b9696df1470a22Ea41F3F7BAB9d6377BF";
-    const rpsContract = await hre.ethers.getContractAt("rps", contractAddress);
+    const contractAddress = "0xA9331D18951Ae8ae95dA7Fa23f06E7FeF072A296";
+    const RPS = await ethers.getContractFactory('RPS');
+    const rps = await RPS.attach(contractAddress);
 
-    console.log(rpsContract.player1());
+    console.log(rps.player1_choice());
   }
   
 main()
