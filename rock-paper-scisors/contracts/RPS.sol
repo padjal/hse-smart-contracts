@@ -20,6 +20,12 @@ contract RPS {
     Choice player1_choice;
     Choice player2_choice;
 
+    event playerRegister(address player, uint bet);
+
+    event commitMessage(bytes32 message, address player);
+
+    event gameResults(address winner);
+
     modifier validBet() {
         require(msg.value >= 1);
         require(bet == 0 || msg.value >= bet);
@@ -36,8 +42,12 @@ contract RPS {
         if (player1 == address(0)) {
             player1 = payable(msg.sender);
             bet = msg.value;
+
+            emit playerRegister(player1, bet);
         } else if (player2 == address(0)) {
             player2 = payable(msg.sender);
+
+            emit playerRegister(player2, bet);
         }
 
         return;
@@ -59,8 +69,12 @@ contract RPS {
     function commitChoice(bytes32 commitment) public playersHaveRegistered {
         if (msg.sender == player1 && commitment != 0x00) {
             player1_commitment = commitment;
+
+            emit commitMessage(commitment, player1);
         } else if (msg.sender == player2 && commitment != 0x00) {
             player2_commitment = commitment;
+
+            emit commitMessage(commitment, player2);
         }
 
         return;
@@ -132,9 +146,13 @@ contract RPS {
         ) {
             // Player 1 wins
             player1.transfer(address(this).balance);
+
+            emit gameResults(player1);
         } else {
             // Player 2 wins
             player2.transfer(address(this).balance);
+
+            emit gameResults(player2);
         }
 
         resetGame();
