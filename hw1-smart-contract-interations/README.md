@@ -1,3 +1,9 @@
+# ДЗ “Взаимодействие со СмК”
+## Contract description
+The smart contract `Bank` used in this tutorial 
+
+Smart contract `Bank` was deployed to [0x90F97057DDa7d6B0371Ee985bEB78EE57310a948](https://sepolia.etherscan.io/address/0x90f97057dda7d6b0371ee985beb78ee57310a948)
+
 # Control Questions
 - Какие есть расширения для обозревателя, которые умеют взаимодействовать с Ethereum?
 
