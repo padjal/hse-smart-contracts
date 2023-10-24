@@ -10,16 +10,18 @@ contract Bank {
     }
     
     address owner;
+    uint id;
 
-    mapping(address => Client) clients;
+    mapping(uint => Client) clients;
 
-    event ClientAdded (address indexed clientAddress, Client client);
+    event ClientAdded (uint indexed clientId, Client client);
 
-    event ClientRemoved (address indexed clientAddress, Client client);
+    event ClientRemoved (uint indexed clientId, Client client);
 
     constructor() {
         //Owner is saved
         owner = msg.sender;
+        id = 1;
     }
 
     modifier onlyOwner() {
@@ -27,20 +29,47 @@ contract Bank {
         _;
     }
 
-    modifier clientNotRegistered() {
-        require(clients[msg.sender].exists, "Client with this address is already registerd.");
+    modifier clientExists(uint clientId){
+        require(clients[id].exists, "Client with this id does not exist.");
         _;
     }
 
-    function addClient(string calldata name, uint age, uint balance) public clientNotRegistered{
-        clients[msg.sender] = Client(name, age, balance, true);
+    /**
+     *  Add a new client. Can be called by everyone.
+     * @param name The name of the new client.
+     * @param age The age of the new client.
+     * @param balance The account balance of the new client.
+     */
+    function addClient(string calldata name, uint age, uint balance) public{
+        clients[id] = Client(name, age, balance, true);
 
-        emit ClientAdded(msg.sender, clients[msg.sender]);
+        emit ClientAdded(id, clients[id]);
+
+        id++;
     }
 
-    function deleteClient(address clientAddress) public onlyOwner {
-        clients[clientAddress].exists = false;
+    /**
+     * Delete a client by id.
+     * @param clientId The id of the client to be deleted.
+     */
+    function deleteClient(uint clientId) clientExists(clientId) public {
+        clients[id].exists = false;
 
-        emit ClientRemoved(clientAddress, clients[clientAddress]);
+        emit ClientRemoved(clientId, clients[clientId]);
+    }
+
+    /**
+     * Gets the id for the next client.
+     */
+    function getCurrentId() public view returns (uint){
+        return id;
+    }
+
+    /**
+     * Gets the client instance by id.
+     * @param clientId The client id of the given client.
+     */
+    function getClient(uint clientId) clientExists(clientId) public view returns (Client memory) {
+        return clients[clientId];
     }
 }

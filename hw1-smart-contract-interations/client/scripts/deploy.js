@@ -26,8 +26,8 @@ async function main() {
   const deployedContract = await deployTx
     .send({
       from: signer.address,
-      gas: 1000000,
-      gasPrice: '30000000'
+      gas: 1500000,
+      gasPrice: '30000000000'
     })
     .once("transactionHash", (txhash) => {
       console.log(`Mining deployment transaction ...`);
