@@ -19,6 +19,9 @@ contract Coin {
 
     // Sends an amount of newly created coins to an address
     // Can only be called by the contract creator
+    // Scribble annotation to check if the balances[receiver] have received the
+    // required ammount
+    /// #if_succeeds {:msg "Balance is successfully increased"} balances[receiver] == old(balances[receiver]) + amount;
     function mint(address receiver, uint amount) public {
         require(msg.sender == minter);
         balances[receiver] += amount;
