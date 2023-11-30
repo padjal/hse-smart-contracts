@@ -28,6 +28,7 @@ contract FundRaising {
         owner.transfer(address(this).balance);
     }
     
+    /// #if_succeeds {:msg "test"} donations[msg.sender] == 0;
     function withdraw() public {
         require(now > endTime, "Fundraising not closed");
         require(total < goal, "Can not withdraw when fundraising was successful");
