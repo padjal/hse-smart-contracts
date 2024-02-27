@@ -15,4 +15,4 @@ We can easily observer that we need the tx.origin to be different from msg.sende
 
 This is why we create a new contract - [Caller.sol](/contracts/Caller.sol), which will act as a gateway.
 
-![Call graph](/res/pics/Telephone.png)
+![Call graph](./res/pics/Telephone.png)
