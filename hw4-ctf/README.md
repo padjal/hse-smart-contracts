@@ -16,3 +16,6 @@ We can easily observer that we need the tx.origin to be different from msg.sende
 This is why we create a new contract - [Caller.sol](/contracts/Caller.sol), which will act as a gateway.
 
 ![Call graph](./res/pics/Telephone.png)
+
+## Timezone
+In this challenge, we need to use `delegatecall` in order to gain ownership of the original contract. `delegatecall` gives the opportunity to call an external function from another contract while using the storage from the original contract, which has initiated the call. Using this method, we can change the owner of the contract.
