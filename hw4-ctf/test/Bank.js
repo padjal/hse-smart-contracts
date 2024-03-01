@@ -67,10 +67,6 @@ describe("Bank", function () {
       console.log("We are richer with ", win, " eth.");
     }
 
-    // var test = await player.getBalance();
-
-    // console.log("Test:", test);
-
     // баланс контракта Bank должен стать 0
     await Bank.setCompleted();
     expect(await Bank.completed()).to.equal(true);
