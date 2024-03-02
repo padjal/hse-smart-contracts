@@ -40,7 +40,7 @@ contract Coin is ERC20 {
     // Не позволяйте первоначальному владельцу передавать токены до тех пор, пока не пройдет временная блокировка
     modifier lockTokens() {
         if (msg.sender == player) {
-            require(block.timestamp > timeLock);
+            require(block.timestamp > timeLock, "Requirement not met.");
             _;
         } else {
             _;

