@@ -4,7 +4,7 @@ pragma solidity ^0.7.6;
 import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
-import {Base64} from "base64/base64.sol"; // просто либа
+import {Base64} from "./base64/base64.sol"; // просто либа
 
 /// @title KittenRaffle
 /// @author CatLoveDAO
@@ -83,7 +83,8 @@ contract KittenRaffle is ERC721, Ownable {
     function enterRaffle(address[] memory newPlayers) public payable {
         require(
             msg.value == entranceFee * newPlayers.length,
-            "KittenRaffle: Необходимо отправить достаточно для участия в розыгрыше"
+            //"KittenRaffle: Необходимо отправить достаточно для участия в розыгрыше"
+            "KittenRaffle: You need to send enough to participate in the raffle"
         );
         for (uint256 i = 0; i < newPlayers.length; i++) {
             players.push(newPlayers[i]);
@@ -94,7 +95,8 @@ contract KittenRaffle is ERC721, Ownable {
             for (uint256 j = i + 1; j < players.length; j++) {
                 require(
                     players[i] != players[j],
-                    "KittenRaffle: Дублирующийся игрок"
+                    //"KittenRaffle: Дублирующийся игрок"
+                    "KittenRaffle: Player already exists"
                 );
             }
         }
@@ -107,11 +109,14 @@ contract KittenRaffle is ERC721, Ownable {
         address playerAddress = players[playerIndex];
         require(
             playerAddress == msg.sender,
-            "KittenRaffle: Только игрок может получить возврат"
+            //"KittenRaffle: Только игрок может получить возврат"
+            "KittenRaffle: Only player can get a refund"
         );
         require(
             playerAddress != address(0),
-            "KittenRaffle: Игрок уже получил возврат или не активен"
+            //KittenRaffle: Только игрок может получить возврат"
+            "KittenRaffle: Only player can get a refund"
+
         );
 
         payable(msg.sender).sendValue(entranceFee);
@@ -143,11 +148,13 @@ contract KittenRaffle is ERC721, Ownable {
     function selectWinner() external {
         require(
             block.timestamp >= raffleStartTime + raffleDuration,
-            "KittenRaffle: Розыгрыш еще не закончился"
+            //"KittenRaffle: Розыгрыш еще не закончился"
+            "KittenRaffle: Raffle hasn't finished yet"
         );
         require(
             players.length >= 4,
-            "KittenRaffle: Необходимо минимум 4 игрока"
+            //"KittenRaffle: Необходимо минимум 4 игрока"
+            "KittenRaffle: A minimum of 4 players is required"
         );
         uint256 winnerIndex = uint256(
             keccak256(
@@ -180,7 +187,8 @@ contract KittenRaffle is ERC721, Ownable {
         (bool success, ) = winner.call{value: prizePool}("");
         require(
             success,
-            "KittenRaffle: Не удалось отправить призовой фонд победителю"
+            //"KittenRaffle: Не удалось отправить призовой фонд победителю"
+            "KittenRaffle: Could not send raffle prize to winner"
         );
         _safeMint(winner, tokenId);
     }
@@ -189,12 +197,14 @@ contract KittenRaffle is ERC721, Ownable {
     function withdrawFees() external {
         require(
             address(this).balance == uint256(totalFees),
-            "KittenRaffle: В настоящее время активны игроки!"
+            //"KittenRaffle: В настоящее время активны игроки!"
+            "KittenRaffle: There are still active players!"
         );
         uint256 feesToWithdraw = totalFees;
         totalFees = 0;
         (bool success, ) = feeAddress.call{value: feesToWithdraw}("");
-        require(success, "KittenRaffle: Не удалось вывести комиссию");
+        //require(success, "KittenRaffle: Не удалось вывести комиссию");
+        require(success, "KittenRaffle: Could not show commission");
     }
 
     /// @notice только владелец контракта может изменить feeAddress
@@ -226,7 +236,8 @@ contract KittenRaffle is ERC721, Ownable {
     ) public view virtual override returns (string memory) {
         require(
             _exists(tokenId),
-            "KittenRaffle: Запрос URI для несуществующего токена"
+            //"KittenRaffle: Запрос URI для несуществующего токена"
+            "KittenRaffle: URI query for non-existing token"
         );
 
         uint256 rarity = tokenIdToRarity[tokenId];
@@ -242,7 +253,8 @@ contract KittenRaffle is ERC721, Ownable {
                             abi.encodePacked(
                                 '{"name":"',
                                 name(),
-                                '", "description":"Очаровательный котенок!", ',
+                                //'", "description":"Очаровательный котенок!", ',
+                                '", "description":"Wonderful kitten!", ',
                                 '"attributes": [{"trait_type": "rarity", "value": ',
                                 rareName,
                                 '}], "image":"',
