@@ -117,4 +117,4 @@ Cargo.lock
 .env
 
 # Zone identifiers - Usualy appear when copying from windows to WSL
-*:Zone.identifier
+*:Zone.Identifier
