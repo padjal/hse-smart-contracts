@@ -68,3 +68,6 @@ We clearly see that we cannot just use the `transfer` function in order to drain
 The key to getting the money out of the contract is observing that it implements the ERC20 interface, which provides other methods for getting money out of contracts - namely, the `transferFrom()` function.
 
 It allows sending a specified amount of tokens from an addresss to another one. Since this function doesn't have the same modifier, therefore, there is no limitation. A key takaway from this CTF task is to always keep an eye on all the functions when implementing an interface because if not overriden, they can provide unsecurred access to data in our contract.
+
+## Meta contracts
+In order to solve the Meta Contracts challenge, I have used Metamorphic contracts and ERC-1167 (Minimal Proxy Contracts). Essentially, with metamorphic contracts, we have the possibility to change the bytecode of a deployed implementation contract, thus changing the behavior of our Factory contract.

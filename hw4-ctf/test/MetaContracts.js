@@ -21,6 +21,7 @@ describe("MetaContracts", function () {
   async function deployFixture() {
     const [deployer] = await hre.ethers.getSigners();
 
+    //We deploy an erc-20 token called HSE
     const HSE = await ethers.deployContract("HSE");
     await HSE.waitForDeployment();
     const HSEAddr = HSE.target;
@@ -65,6 +66,14 @@ describe("MetaContracts", function () {
     );
 
     // напишите свой контракт и тесты, чтобы получить нужное состояние контракта
+    const WalletERC20 = await ethers.deployContract("WalletERC20");
+    await WalletERC20.waitForDeployment();
+    const WalletERC20Addr = await WalletERC20.getAddress();
+    console.log("Адрес реализации:", WalletERC20Addr);
+
+    const salt = 2;
+    await MetaFactory.deploy(salt, buildString(WalletERC20Addr));
+    const newProxyAddr = await MetaFactory.proxys(salt);
 
     // баланс контракта прокси в токене HSE должен стать 0
     expect(await HSE.balanceOf(newProxyAddr)).to.equal(0);
