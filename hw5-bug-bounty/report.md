@@ -23,7 +23,7 @@ Lead Auditors:
 
 # Protocol Summary
 
-Protocol does X, Y, Z
+The smart contract under audit allows the partcicipation in an NFT raffle event for different players.
 
 # Disclaimer
 
@@ -68,7 +68,7 @@ All vulnerabilities discovered during the audit are classified based on their po
 
 # Findings
 
-### VULNERABILITY_NAME
+## VULNERABILITY_NAME
 
 ### Description
 
@@ -78,8 +78,50 @@ All vulnerabilities discovered during the audit are classified based on their po
 
 # High
 
+## Re-entrancy in `refund()`
+
+Location: `KittenRaffle.sol:#123`
+
+### Description
+Re-entrancy can be caused if the state of the contract is updated after the transactions get executed. In `KittenRaffle.sol` we have a possibility for re-entrancy in the `refund()` function. Any interaction from a contract (A) with another contract (B) and any transfer of Ether hands over control to that contract (B). This makes it possible for B to call back into A before this interaction is completed.
+
+### Recommendation
+To avoid re-entrancy, you can use the Checks-Effects-Interactions pattern as outlined further below:
+
+```solidity
+players[playerIndex] = address(0);
+payable(msg.sender).sendValue(entranceFee);
+emit RaffleRefunded(playerAddress);
+```
+
+### POC
+See [`KittenRaffle.js:#31`](/test/KittenRaffle.js)
+
 # Medium
+
+## Weak PRNG
+
+Location: `KittenRaffle.sol:#148`
+
+The product uses a Pseudo-Random Number Generator (PRNG) in a security context, but the PRNG's algorithm is not cryptographically strong.
+
+### Description
+When a non-cryptographic PRNG is used in a cryptographic context, it can expose the cryptography to certain types of attacks.
+
+Often a pseudo-random number generator (PRNG) is not designed for cryptography. Sometimes a mediocre source of randomness is sufficient or preferable for algorithms that use random numbers. Weak generators generally take less processing power and/or do not use the precious, finite, entropy sources on a system. While such PRNGs might have very useful features, these same features could be used to break the cryptography.
+
+### Recommendation
+Do not use `block.timestamp`, `now` or `blockhash` as a source of randomness. 
+
+Secure randomness on the blockchain is hard. One can use Chainlink's VRF oracles instead, or rely on Ethereum's new PREVRANDAO opcode. Note that if the contract is deployed on other blockchains, the opcode will have the old DIFFICULTY semantics, which is also not secure.
+
+### POC
 
 # Low
 
 # Gas
+
+
+
+
+
