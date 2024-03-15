@@ -61,20 +61,12 @@ All vulnerabilities discovered during the audit are classified based on their po
 
 | Severity | # of Findings |
 | -------- | ------------- |
-| CRITICAL |               |
-| HIGH     |               |
-| MEDIUM   |               |
-| LOW      |               |
+| CRITICAL |      1         |
+| HIGH     |      1         |
+| MEDIUM   |       1        |
+| LOW      |        1       |
 
 # Findings
-
-## VULNERABILITY_NAME
-
-### Description
-
-### Recommendation
-
-### POC
 
 # High
 
@@ -140,6 +132,24 @@ function transferOwnership(address newOwner) public virtual onlyOwner {
 ### POC
 
 # Gas
+
+## Unchanged variables should be `immutable` or `constant`
+
+### Description
+In Solidity variables, which are not changing should be marked as `immutable` or `constant`. These variables are integrated into the contract's bytecode and don't require space in the memory.
+
+### Recommendation
+Change variables to constant if they are not updated.
+
+### POC
+Change of variables `commonImageUri`, `commonImageUri`, `legendaryImageUri` to constant yielded a 72,012 gas optimisation:
+
+### Before:
+![](./res/pics/before_constant.png)
+
+### After:
+![](./res/pics/after_constant.png)
+
 
 
 

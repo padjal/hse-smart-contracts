@@ -74,10 +74,10 @@ describe("KittenRaffle", function () {
         expect(result).to.equal(0);
       });      
 
-      it("Win kitten", async function () {
+      it.only("Win kitten", async function () {
         const {KittenRaffle, entranceFee} = await loadFixture(deployFixture);
 
-        const [ feeAddress, player1, player2, player3, player4 ] = await ethers.getSigners();
+        const [ feeAddress, player1, player2, player3, player4, p5, p6, p7, p8, p9 ] = await ethers.getSigners();
 
         console.log("Before raffle balances:")
         console.log(`Player1 balance: ${await getBalance(player1)}`);
@@ -87,8 +87,8 @@ describe("KittenRaffle", function () {
         console.log(`FeeAddress balance: ${await getBalance(feeAddress)}`);
 
         //Register players and maliscious contract
-        await KittenRaffle.enterRaffle([player1, player2, player3, player4], {
-          value: entranceFee * 4 // number of players
+        await KittenRaffle.enterRaffle([player1, player2, player3, player4, p5, p6, p7, p8, p9], {
+          value: entranceFee * 9 // number of players
         });
 
         await KittenRaffle.selectWinner();
@@ -103,8 +103,6 @@ describe("KittenRaffle", function () {
         console.log(`FeeAddress balance: ${await getBalance(feeAddress)}`);
 
         const tokenUri = await KittenRaffle.tokenURI(0);
-
-
 
         console.log(`Token URI: ${tokenUri}`);
 
@@ -152,7 +150,7 @@ describe("KittenRaffle", function () {
         //expect(result).to.equal(0);
       });
 
-      it.only("Change fee address", async function () {
+      it("Change fee address", async function () {
         const {KittenRaffle, entranceFee} = await loadFixture(deployFixture);
 
         const [ feeAddress, player1, player2, player3, player4 ] = await ethers.getSigners();
