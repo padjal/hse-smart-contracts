@@ -35,6 +35,10 @@ describe("KittenRaffle", function () {
       KittenRaffle.on("FeeAddressChanged", (newFeeAddress) => {
         console.log(`FeeAddressChanged. NewFeeAddress: ${newFeeAddress}`);
       });
+
+      KittenRaffle.on("Transfer", (from, to, tokenId) => {
+        console.log(`NFT ${tokenId} transfered from ${from} to ${to}`);
+      });
   
       return { KittenRaffle, entranceFee };
     }
@@ -69,5 +73,116 @@ describe("KittenRaffle", function () {
 
         expect(result).to.equal(0);
       });      
+
+      it("Win kitten", async function () {
+        const {KittenRaffle, entranceFee} = await loadFixture(deployFixture);
+
+        const [ feeAddress, player1, player2, player3, player4 ] = await ethers.getSigners();
+
+        console.log("Before raffle balances:")
+        console.log(`Player1 balance: ${await getBalance(player1)}`);
+        console.log(`Player2 balance: ${await getBalance(player2)}`);
+        console.log(`Player3 balance: ${await getBalance(player3)}`);
+        console.log(`Player4 balance: ${await getBalance(player4)}`);
+        console.log(`FeeAddress balance: ${await getBalance(feeAddress)}`);
+
+        //Register players and maliscious contract
+        await KittenRaffle.enterRaffle([player1, player2, player3, player4], {
+          value: entranceFee * 4 // number of players
+        });
+
+        await KittenRaffle.selectWinner();
+  
+        await new Promise(res => setTimeout(res, 4000)); // waits for 4 secs in order to get the events
+
+        console.log("After raffle balances:")
+        console.log(`Player1 balance: ${await getBalance(player1)}`);
+        console.log(`Player2 balance: ${await getBalance(player2)}`);
+        console.log(`Player3 balance: ${await getBalance(player3)}`);
+        console.log(`Player4 balance: ${await getBalance(player4)}`);
+        console.log(`FeeAddress balance: ${await getBalance(feeAddress)}`);
+
+        const tokenUri = await KittenRaffle.tokenURI(0);
+
+
+
+        console.log(`Token URI: ${tokenUri}`);
+
+        await new Promise(res => setTimeout(res, 4000)); // waits for 4 secs in order to get the events
+
+        //expect(result).to.equal(0);
+      });
+      
+      it("One player exists", async function () {
+        const {KittenRaffle, entranceFee} = await loadFixture(deployFixture);
+
+        const [ feeAddress, player1, player2, player3, player4 ] = await ethers.getSigners();
+
+        console.log("Before raffle balances:")
+        console.log(`Player1 balance: ${await getBalance(player1)}`);
+        console.log(`Player2 balance: ${await getBalance(player2)}`);
+        console.log(`Player3 balance: ${await getBalance(player3)}`);
+        console.log(`Player4 balance: ${await getBalance(player4)}`);
+        console.log(`FeeAddress balance: ${await getBalance(feeAddress)}`);
+
+        //Register players and maliscious contract
+        await KittenRaffle.enterRaffle([player1, player2, player3, player4], {
+          value: entranceFee * 4 // number of players
+        });
+
+        //One player exits
+        activePlayerIndex = await KittenRaffle.getActivePlayerIndex(player2);
+
+        await KittenRaffle.connect(player2).refund(activePlayerIndex);
+
+        await KittenRaffle.selectWinner();
+
+        result = await ethers.provider.getBalance(KittenRaffle.target);
+  
+        await new Promise(res => setTimeout(res, 4000)); // waits for 4 secs in order to get the events
+
+        console.log("After raffle balances:")
+        console.log(`Player1 balance: ${await getBalance(player1)}`);
+        console.log(`Player2 balance: ${await getBalance(player2)}`);
+        console.log(`Player3 balance: ${await getBalance(player3)}`);
+        console.log(`Player4 balance: ${await getBalance(player4)}`);
+        console.log(`FeeAddress balance: ${await getBalance(feeAddress)}`);
+
+
+        //expect(result).to.equal(0);
+      });
+
+      it.only("Change fee address", async function () {
+        const {KittenRaffle, entranceFee} = await loadFixture(deployFixture);
+
+        const [ feeAddress, player1, player2, player3, player4 ] = await ethers.getSigners();
+
+        //Register players and maliscious contract
+        await KittenRaffle.enterRaffle([player1, player2, player3, player4], {
+          value: entranceFee * 4 // number of players
+        });
+
+        await KittenRaffle.connect(feeAddress).changeFeeAddress("0x0000000000000000000000000000000000000000");
+
+        await KittenRaffle.selectWinner();
+
+        await KittenRaffle.withdrawFees();
+  
+        await new Promise(res => setTimeout(res, 4000)); // waits for 4 secs in order to get the events
+
+        const tokenUri = await KittenRaffle.tokenURI(0);
+        
+
+        console.log(`Token URI: ${tokenUri}`);
+
+        await new Promise(res => setTimeout(res, 4000)); // waits for 4 secs in order to get the events
+
+        //expect(result).to.equal(0);
+      });
     });
   });
+
+  async function getBalance(address) {
+    const balance = await ethers.provider.getBalance(address)
+    return `${ethers.formatEther(balance)} ETH`
+  }

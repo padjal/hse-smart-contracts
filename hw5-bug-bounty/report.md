@@ -119,6 +119,26 @@ Secure randomness on the blockchain is hard. One can use Chainlink's VRF oracles
 
 # Low
 
+## NewFeeAddress lacks zero check
+
+Location: `KittenRaffle.sol:#206`
+
+### Description
+Contract allows for setting the `newFeeAddress` to zero. Afterwards, when the `withdrawFees()` function is executed, the fees to withdraw are permanently lost. Estimates that currently there are more than 900,000ETH lost forever due to such errors. Though this doesn't affect the normal functionality of the contract, it can lead to unwanted consequences for the raffle organizers.
+
+### Recommendation
+Add a zero check, similar to OpenZeppelin's Ownable contract's function `transferOwnership()`:
+
+```solidity
+function transferOwnership(address newOwner) public virtual onlyOwner {
+        require(newOwner != address(0), "Ownable: new owner is the zero address");
+        emit OwnershipTransferred(_owner, newOwner);
+        _owner = newOwner;
+    }
+```
+
+### POC
+
 # Gas
 
 

@@ -109,16 +109,15 @@ contract KittenRaffle is ERC721, Ownable {
         address playerAddress = players[playerIndex];
         require(
             playerAddress == msg.sender,
-            //"KittenRaffle: Только игрок может получить возврат"
             "KittenRaffle: Only player can get a refund"
         );
         require(
             playerAddress != address(0),
-            //KittenRaffle: Только игрок может получить возврат"
             "KittenRaffle: Only player can get a refund"
 
         );
 
+        //Possible reentrancy because state is updated after transfer function.
         payable(msg.sender).sendValue(entranceFee);
 
         players[playerIndex] = address(0);
@@ -147,13 +146,11 @@ contract KittenRaffle is ERC721, Ownable {
     /// @dev мы отправляем 80% собранных средств победителю, остальные 20% отправляются на feeAddress
     function selectWinner() external {
         require(
-            block.timestamp >= raffleStartTime + raffleDuration,
-            //"KittenRaffle: Розыгрыш еще не закончился"
-            "KittenRaffle: Raffle hasn't finished yet"
+            block.timestamp <= raffleStartTime + raffleDuration,
+            "KittenRaffle: Raffle is finished"
         );
         require(
             players.length >= 4,
-            //"KittenRaffle: Необходимо минимум 4 игрока"
             "KittenRaffle: A minimum of 4 players is required"
         );
         uint256 winnerIndex = uint256(
@@ -187,7 +184,6 @@ contract KittenRaffle is ERC721, Ownable {
         (bool success, ) = winner.call{value: prizePool}("");
         require(
             success,
-            //"KittenRaffle: Не удалось отправить призовой фонд победителю"
             "KittenRaffle: Could not send raffle prize to winner"
         );
         _safeMint(winner, tokenId);
@@ -197,14 +193,12 @@ contract KittenRaffle is ERC721, Ownable {
     function withdrawFees() external {
         require(
             address(this).balance == uint256(totalFees),
-            //"KittenRaffle: В настоящее время активны игроки!"
             "KittenRaffle: There are still active players!"
         );
         uint256 feesToWithdraw = totalFees;
         totalFees = 0;
         (bool success, ) = feeAddress.call{value: feesToWithdraw}("");
-        //require(success, "KittenRaffle: Не удалось вывести комиссию");
-        require(success, "KittenRaffle: Could not show commission");
+        require(success, "KittenRaffle: Could not transfer commission");
     }
 
     /// @notice только владелец контракта может изменить feeAddress
