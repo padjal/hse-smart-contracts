@@ -116,6 +116,11 @@ Solidity compiler versions <0.8.0 don't integrate underflow/overflow protection 
 ### Description
 Overflow is when you run out of bits to the left as a result of a math operation. Underflow is when you run out of bits to the right. This can result in unwanted and unpredictable state of the contract, which can be used by malisciout users to retrieve funds.
 
+```solidity
+uint256 prizePool = (totalAmountCollected * 80) / 100;
+uint256 fee = (totalAmountCollected * 20) / 100;
+```
+
 ### Recommendation
 When using solidity version <0.8.0, integrate OpenZeppelin's SafeMath library for mathematical operations. From solidity version 0.8.0 onwards, solidity integrates SafeMath natively. Keep in mind that this slightly increases gas usage, but is in general the preferred solution.
 
