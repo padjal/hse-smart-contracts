@@ -62,8 +62,8 @@ All vulnerabilities discovered during the audit are classified based on their po
 | Severity | # of Findings |
 | -------- | ------------- |
 | CRITICAL |      1         |
-| HIGH     |      1         |
-| MEDIUM   |       1        |
+| HIGH     |      2         |
+| MEDIUM   |       0        |
 | LOW      |        1       |
 
 # Findings
@@ -89,8 +89,6 @@ emit RaffleRefunded(playerAddress);
 ### POC
 See [`KittenRaffle.js:#31`](/test/KittenRaffle.js)
 
-# Medium
-
 ## Weak PRNG
 
 Location: `KittenRaffle.sol:#148`
@@ -108,6 +106,22 @@ Do not use `block.timestamp`, `now` or `blockhash` as a source of randomness.
 Secure randomness on the blockchain is hard. One can use Chainlink's VRF oracles instead, or rely on Ethereum's new PREVRANDAO opcode. Note that if the contract is deployed on other blockchains, the opcode will have the old DIFFICULTY semantics, which is also not secure.
 
 ### POC
+
+## SelectWinner lacks overflow check
+
+Location: `KittenRaffle.sol:#163`
+
+Solidity compiler versions <0.8.0 don't integrate underflow/overflow protection of mathematical operations by default.
+
+### Description
+Overflow is when you run out of bits to the left as a result of a math operation. Underflow is when you run out of bits to the right. This can result in unwanted and unpredictable state of the contract, which can be used by malisciout users to retrieve funds.
+
+### Recommendation
+When using solidity version <0.8.0, integrate OpenZeppelin's SafeMath library for mathematical operations. From solidity version 0.8.0 onwards, solidity integrates SafeMath natively. Keep in mind that this slightly increases gas usage, but is in general the preferred solution.
+
+### POC
+
+# Medium
 
 # Low
 
